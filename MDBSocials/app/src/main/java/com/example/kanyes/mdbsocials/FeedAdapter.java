@@ -12,10 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
 
 import java.util.ArrayList;
 
@@ -25,7 +21,8 @@ import java.util.ArrayList;
 
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.CustomViewHolder> {
     private Context context;
-    private ArrayList<Social> data;
+    public static ArrayList<Social> data;
+    Utils util= new Utils();
 
     public FeedAdapter(Context context, ArrayList<Social> data){
         this.context = context;
@@ -44,9 +41,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.CustomViewHold
         holder.eventView.setText(s.getEvent());
         holder.evemailView.setText(s.getEmail());
         holder.num_interestedView.setText("" + s.getNum_interested()+ " interested!");
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference().child(s.id + ".png");
-        Glide.with(context).using(new FirebaseImageLoader()).load(storageReference).into(holder.imgView);
-
+        util.setImg(s.getId(), holder.itemView, holder.imgView.getId());
     }
 
     @Override

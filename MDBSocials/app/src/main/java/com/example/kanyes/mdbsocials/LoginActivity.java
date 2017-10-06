@@ -34,6 +34,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
     EditText emailView, passwordView;
     ImageView imgView;
     public static String email;
+    Utils util = new Utils();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +46,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
         imgView = (ImageView) findViewById(R.id.evimageView);
         loginButton.setOnClickListener(this);
         signupButton.setOnClickListener(this);
-        animateButtons();
+        util.animateButtons();
 
         auth = FirebaseAuth.getInstance();
         authListener = new FirebaseAuth.AuthStateListener() {
@@ -77,38 +78,17 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
         }
 
     }
-    public void animateButtons() {
-        // int[] imageButtonIds = {R.id.animateButton};
-        int[] viewIds = {R.id.imageView, R.id.emailView, R.id.passwordView, R.id.loginButton,R.id.signupButton};
 
-        int i = 1;
-
-        for (int viewId : viewIds) {
-            // Button imageButton = (Button) findViewById(viewId);
-            Animation fadeAnimation = AnimationUtils.loadAnimation(this, R.anim.fading_effect);
-            fadeAnimation.setStartOffset(i * 250);
-            //imageButton.startAnimation(fadeAnimation);
-
-            int textViewId = viewIds[i-1];
-            if (textViewId!=R.id.imageView) {
-                TextView textView = (TextView) findViewById(textViewId);
-                textView.startAnimation(fadeAnimation);
-            }
-            else{
-                ImageView textView = (ImageView) findViewById(textViewId);
-                textView.startAnimation(fadeAnimation);
-            }
-            i ++;
-        }
-    }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case (R.id.loginButton):
+                Log.d("Loggin in fam", "onClick:loginButton");
                 attemptLogin();
                 break;
             case (R.id.signupButton):
+                Log.d("Signin up fam", "onClick:signupButton");
                 startActivity(new Intent(getApplicationContext(), SignupActivity.class));
                 break;
         }

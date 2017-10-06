@@ -28,4 +28,5 @@
         <activity android:name=".NewSocialActivity"></activity>
         <activity android:name=".SocialPage"></activity>
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

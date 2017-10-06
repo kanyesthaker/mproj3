@@ -33,28 +33,17 @@ public class NewSocialActivity extends AppCompatActivity implements View.OnClick
     private Uri result;
     private StorageReference mStorageRef;
     Button submit, addImage;
-    Context context;
+    public static Context context;
     private ImageView img;
-    StorageReference sref, imgref;
-    final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-    final String key = ref.child("socials").push().getKey();
+    StorageReference imgref;
+    Utils util = new Utils();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_social);
 
-        sref = FirebaseStorage.getInstance().getReferenceFromUrl("gs://mdbsocials-d0158.appspot.com");
-        imgref = sref.child(key + ".png");
-        submit = (Button) findViewById(R.id.submit);
-        addImage = (Button) findViewById(R.id.addImage);
-        final EditText newSocialName = (EditText) findViewById(R.id.newSocialName);
-        final EditText newSocialDate = (EditText) findViewById(R.id.newSocialDate);
-        final EditText newSocialDescription = (EditText) findViewById(R.id.newSocialDescription);
-        img = (ImageView) findViewById(R.id.newSocialImage);
-
-
-
+        util.socialCreationPage();
         mStorageRef = FirebaseStorage.getInstance().getReference();
         addImage.setOnClickListener(this);
         submit.setOnClickListener(this);
@@ -69,6 +58,7 @@ public class NewSocialActivity extends AppCompatActivity implements View.OnClick
             result=data.getData();
             if (imgref != null){
                 Glide.with(NewSocialActivity.this).using(new FirebaseImageLoader()).load(imgref).into(img);
+                util.setImg(imgref.getDownloadUrl().toString(), img, img.getId());
             }
         }
     }
@@ -78,10 +68,12 @@ public class NewSocialActivity extends AppCompatActivity implements View.OnClick
 
         switch (v.getId()){
             case (R.id.addImage):
+                //Get an image from another app
                 startActivityForResult((new Intent(Intent.ACTION_GET_CONTENT)).setType("image/*"), 1);
                 break;
             case (R.id.submit):
                 if (result != null) {
+                    //Make a new social using method from Utils
                     imgref.putFile(result).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
@@ -90,17 +82,7 @@ public class NewSocialActivity extends AppCompatActivity implements View.OnClick
                     }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            String event = ((EditText) findViewById(R.id.newSocialName)).getText().toString();
-                            String date = ((EditText) findViewById(R.id.newSocialDate)).getText().toString();
-                            String email = LoginActivity.email;
-                            String interested = "0";
-                            String description = ((EditText) findViewById(R.id.newSocialDescription)).getText().toString();
-                            ref.child("socials").child(key).child("event").setValue(event);
-                            ref.child("socials").child(key).child("date").setValue(date);
-                            ref.child("socials").child(key).child("email").setValue(email);
-                            ref.child("socials").child(key).child("interested").setValue(interested);
-                            ref.child("socials").child(key).child("description").setValue(description);
-                            startActivity(new Intent(NewSocialActivity.this, FeedActivity.class));
+                            util.newSocial();
                         }
                     });
                 }

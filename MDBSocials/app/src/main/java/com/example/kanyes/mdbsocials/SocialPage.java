@@ -26,7 +26,8 @@ public class SocialPage extends AppCompatActivity implements View.OnClickListene
     TextView event, email, date, description;
     ImageView image;
     DatabaseReference newRef;
-    Intent i;
+    Utils util = new Utils();
+    static Intent i;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,20 +42,8 @@ public class SocialPage extends AppCompatActivity implements View.OnClickListene
         description = (TextView) findViewById(R.id.eventDescriptionScreen);
         interested = (Button) findViewById(R.id.interested);
         back = (Button) findViewById(R.id.back);
-        newRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                event.setText(dataSnapshot.child("event").getValue(String.class));
-                email.setText(dataSnapshot.child("email").getValue(String.class));
-                date.setText(dataSnapshot.child("date").getValue(String.class));
-                description.setText(dataSnapshot.child("description").getValue(String.class));
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        util.socialPage();
         interested.setOnClickListener(this);
         back.setOnClickListener(this);
     }
