@@ -66,7 +66,7 @@ public class SocialPage extends AppCompatActivity implements View.OnClickListene
                 newRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        newRef.child("interested").setValue(Integer.toString(Integer.parseInt(dataSnapshot.child("interested").getValue(String.class))+1));
+                        newRef.child("interested").setValue(Integer.toString(Integer.parseInt(dataSnapshot.child("interested").getValue(String.class)) + 1));
                     }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {

@@ -24,7 +24,7 @@ import java.util.ArrayList;
  */
 
 public class FeedActivity extends AppCompatActivity implements View.OnClickListener {
-    final static ArrayList<Social> socials = new ArrayList<>();
+    static ArrayList<Social> socials = new ArrayList<>();
     FeedAdapter adapter = new FeedAdapter(this, socials);
     FloatingActionButton fab;
     DatabaseReference ref = FirebaseDatabase.getInstance().getReference("/socials");
@@ -36,33 +36,22 @@ public class FeedActivity extends AppCompatActivity implements View.OnClickListe
         recyclerAdapter.setLayoutManager(new LinearLayoutManager(this));
         recyclerAdapter.setAdapter(adapter);
 
-
-        ref = FirebaseDatabase.getInstance().getReference("/socials");
-        ref.orderByChild("date").addChildEventListener(new ChildEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                socials.add(new Social(dataSnapshot.child("email").getValue(String.class), dataSnapshot.child("event").getValue(String.class), dataSnapshot.getKey(), dataSnapshot.child("interested").getValue(String.class), dataSnapshot.child("description").getValue(String.class), dataSnapshot.child("date").getValue(String.class)));
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                socials = new ArrayList<>();
+                for (DataSnapshot dataSnapshot2: dataSnapshot.getChildren()) {
+                    socials.add(0, new Social(dataSnapshot2.child("email").getValue(String.class), dataSnapshot2.child("event").getValue(String.class), dataSnapshot2.getKey(), dataSnapshot2.child("interested").getValue(String.class), dataSnapshot2.child("description").getValue(String.class), dataSnapshot2.child("date").getValue(String.class)));
+                }
                 adapter.notifyDataSetChanged();
             }
 
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("Value Failed", "Failed to read value.", error.toException());
             }
         });
 

@@ -13,6 +13,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 
 import java.util.ArrayList;
 
@@ -41,24 +44,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.CustomViewHold
         holder.eventView.setText(s.getEvent());
         holder.evemailView.setText(s.getEmail());
         holder.num_interestedView.setText("" + s.getNum_interested()+ " interested!");
-
-        class DownloadFilesTask extends AsyncTask<String, Void, Bitmap> {
-            protected Bitmap doInBackground(String... strings) {
-                try {return Glide.
-                        with(context).
-                        load(strings[0]).
-                        asBitmap().
-                        into(100, 100). // Width and height
-                        get();}
-                catch (Exception e) {return null;}
-            }
-
-            protected void onProgressUpdate(Void... progress) {}
-
-            protected void onPostExecute(Bitmap result) {
-                holder.imgView.setImageBitmap(result);
-            }
-        }
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference().child(s.id + ".png");
+        Glide.with(context).using(new FirebaseImageLoader()).load(storageReference).into(holder.imgView);
 
     }
 

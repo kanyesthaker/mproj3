@@ -1,5 +1,6 @@
 package com.example.kanyes.mdbsocials;
 
+import android.content.Context;
 import android.content.Intent;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
@@ -10,9 +11,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
@@ -29,16 +33,26 @@ public class NewSocialActivity extends AppCompatActivity implements View.OnClick
     private Uri result;
     private StorageReference mStorageRef;
     Button submit, addImage;
+    Context context;
+    private ImageView img;
+    StorageReference sref, imgref;
+    final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+    final String key = ref.child("socials").push().getKey();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_social);
+
+        sref = FirebaseStorage.getInstance().getReferenceFromUrl("gs://mdbsocials-d0158.appspot.com");
+        imgref = sref.child(key + ".png");
         submit = (Button) findViewById(R.id.submit);
         addImage = (Button) findViewById(R.id.addImage);
         final EditText newSocialName = (EditText) findViewById(R.id.newSocialName);
         final EditText newSocialDate = (EditText) findViewById(R.id.newSocialDate);
         final EditText newSocialDescription = (EditText) findViewById(R.id.newSocialDescription);
+        img = (ImageView) findViewById(R.id.newSocialImage);
+
 
 
         mStorageRef = FirebaseStorage.getInstance().getReference();
@@ -53,20 +67,20 @@ public class NewSocialActivity extends AppCompatActivity implements View.OnClick
 
         if (requestCode == 1 && resultCode == RESULT_OK) {
             result=data.getData();
+            if (imgref != null){
+                Glide.with(NewSocialActivity.this).using(new FirebaseImageLoader()).load(imgref).into(img);
+            }
         }
     }
 
     @Override
     public void onClick(View v) {
+
         switch (v.getId()){
             case (R.id.addImage):
                 startActivityForResult((new Intent(Intent.ACTION_GET_CONTENT)).setType("image/*"), 1);
                 break;
             case (R.id.submit):
-                final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-                final String key = ref.child("socials").push().getKey();
-                StorageReference sref = FirebaseStorage.getInstance().getReferenceFromUrl("gs://mdbsocials-d0158.appspot.com");
-                StorageReference imgref = sref.child(key + ".png");
                 if (result != null) {
                     imgref.putFile(result).addOnFailureListener(new OnFailureListener() {
                         @Override
